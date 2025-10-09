@@ -180,6 +180,33 @@ vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#7aa2f7', bold = true })
 vim.api.nvim_set_hl(0, 'TabLine', { bg = '#2e3440', fg = '#d8dee9', bold = false })      -- Inactive: gray bg, white text
 vim.api.nvim_set_hl(0, 'TabLineSel', { bg = '#ff79c6', fg = '#000000', bold = true })    -- Active: bright pink bg, black text
 vim.api.nvim_set_hl(0, 'TabLineFill', { bg = '#1e1e2e' })                                 -- Fill: dark background
+
+-- Custom tabline to show tab numbers
+function _G.custom_tabline()
+  local s = ''
+  for i = 1, vim.fn.tabpagenr('$') do
+    -- Select highlight group
+    if i == vim.fn.tabpagenr() then
+      s = s .. '%#TabLineSel#'
+    else
+      s = s .. '%#TabLine#'
+    end
+    -- Set tab page number (for mouse clicks)
+    s = s .. '%' .. i .. 'T'
+    -- Get buffer name
+    local bufnr = vim.fn.tabpagebuflist(i)[vim.fn.tabpagewinnr(i)]
+    local bufname = vim.fn.bufname(bufnr)
+    local filename = bufname ~= '' and vim.fn.fnamemodify(bufname, ':t') or '[No Name]'
+    -- Add tab number and filename
+    s = s .. ' ' .. i .. ': ' .. filename .. ' '
+  end
+  -- Fill the rest with TabLineFill
+  s = s .. '%#TabLineFill#%T'
+  return s
+end
+
+vim.o.tabline = '%!v:lua.custom_tabline()'
+
 -- Dim inactive windows
 vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
   callback = function()
