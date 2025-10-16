@@ -177,14 +177,14 @@ vim.o.winblend = 0
 -- Make window separators more visible
 vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#7aa2f7', bold = true })
 -- Make tab colors more pronounced with vibrant colors
-vim.api.nvim_set_hl(0, 'TabLine', { bg = '#2e3440', fg = '#d8dee9', bold = false })      -- Inactive: gray bg, white text
-vim.api.nvim_set_hl(0, 'TabLineSel', { bg = '#ff79c6', fg = '#000000', bold = true })    -- Active: bright pink bg, black text
-vim.api.nvim_set_hl(0, 'TabLineFill', { bg = '#1e1e2e' })                                 -- Fill: dark background
+vim.api.nvim_set_hl(0, 'TabLine', { bg = '#2e3440', fg = '#d8dee9', bold = false }) -- Inactive: gray bg, white text
+vim.api.nvim_set_hl(0, 'TabLineSel', { bg = '#ff79c6', fg = '#000000', bold = true }) -- Active: bright pink bg, black text
+vim.api.nvim_set_hl(0, 'TabLineFill', { bg = '#1e1e2e' }) -- Fill: dark background
 
 -- Custom tabline to show tab numbers
 function _G.custom_tabline()
   local s = ''
-  for i = 1, vim.fn.tabpagenr('$') do
+  for i = 1, vim.fn.tabpagenr '$' do
     -- Select highlight group
     if i == vim.fn.tabpagenr() then
       s = s .. '%#TabLineSel#'
@@ -310,6 +310,11 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+
+  require 'custom/plugins/lualine',
+  require 'custom/plugins/neotree',
+  require 'custom/plugins/bufferline',
+
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
