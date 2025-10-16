@@ -3,25 +3,28 @@ return {
   dependencies = { 'nvim-tree/nvim-web-devicons' },
   config = function()
     local colors = {
-      red = '#ca1243',
-      grey = '#a0a1a7',
-      black = '#383a42',
-      white = '#f3f3f3',
-      light_green = '#83a598',
-      orange = '#fe8019',
-      green = '#8ec07c',
+      red = '#f7768e',
+      grey = '#565f89',
+      black = '#1a1b26',
+      white = '#c0caf5',
+      light_green = '#9ece6a',
+      orange = '#ff9e64',
+      green = '#73daca',
+      blue = '#7aa2f7',
+      bg_dark = '#16161e',
+      purple = '#bb9af7',
     }
 
     local theme = {
       normal = {
-        a = { fg = colors.white, bg = colors.black },
+        a = { fg = colors.black, bg = colors.blue, gui = 'bold' },
         b = { fg = colors.white, bg = colors.grey },
-        c = { fg = colors.black, bg = colors.white },
-        z = { fg = colors.white, bg = colors.black },
+        c = { fg = colors.white, bg = colors.bg_dark },
+        z = { fg = colors.black, bg = colors.blue, gui = 'bold' },
       },
-      insert = { a = { fg = colors.black, bg = colors.light_green } },
-      visual = { a = { fg = colors.black, bg = colors.orange } },
-      replace = { a = { fg = colors.black, bg = colors.green } },
+      insert = { a = { fg = colors.black, bg = colors.light_green, gui = 'bold' } },
+      visual = { a = { fg = colors.black, bg = colors.purple, gui = 'bold' } },
+      replace = { a = { fg = colors.black, bg = colors.red, gui = 'bold' } },
     }
 
     local empty = require('lualine.component'):extend()
@@ -38,7 +41,7 @@ return {
       for name, section in pairs(sections) do
         local left = name:sub(9, 10) < 'x'
         for pos = 1, name ~= 'lualine_z' and #section or #section - 1 do
-          table.insert(section, pos * 2, { empty, color = { fg = colors.white, bg = colors.white } })
+          table.insert(section, pos * 2, { empty, color = { fg = colors.bg_dark, bg = colors.bg_dark } })
         end
         for id, comp in ipairs(section) do
           if type(comp) ~= 'table' then
