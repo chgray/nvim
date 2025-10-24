@@ -260,17 +260,6 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
--- Tab navigation with Option (Meta) key + number
-vim.keymap.set('n', '<M-1>', '1gt', { desc = 'Go to tab 1' })
-vim.keymap.set('n', '<M-2>', '2gt', { desc = 'Go to tab 2' })
-vim.keymap.set('n', '<M-3>', '3gt', { desc = 'Go to tab 3' })
-vim.keymap.set('n', '<M-4>', '4gt', { desc = 'Go to tab 4' })
-vim.keymap.set('n', '<M-5>', '5gt', { desc = 'Go to tab 5' })
-vim.keymap.set('n', '<M-6>', '6gt', { desc = 'Go to tab 6' })
-vim.keymap.set('n', '<M-7>', '7gt', { desc = 'Go to tab 7' })
-vim.keymap.set('n', '<M-8>', '8gt', { desc = 'Go to tab 8' })
-vim.keymap.set('n', '<M-9>', '9gt', { desc = 'Go to tab 9' })
-
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -415,7 +404,6 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
-        { '<leader>w', group = '[W]indow (cg)' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
@@ -479,16 +467,11 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        defaults = {
-          mappings = {
-            i = {
-              ['<CR>'] = 'select_tab',
-            },
-            n = {
-              ['<CR>'] = 'select_tab',
-            },
-          },
-        },
+        -- defaults = {
+        --   mappings = {
+        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+        --   },
+        -- },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
