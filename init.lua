@@ -93,7 +93,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -170,7 +170,7 @@ vim.o.cursorline = true
 vim.o.scrolloff = 10
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
--- instead raise a dialog asking if you wish to save the current file(s)
+-- instead raise a dialog asking if you wish to save the current file()
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
@@ -409,6 +409,12 @@ require('lazy').setup({
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
         { '<leader>f', '<cmd>Neotree toggle<cr>', desc = 'Toggle Neo-tree' },
+        { '<leader>d', '<cmd>DiffviewOpen -- %<cr>', desc = '[D]iff current file with {git,hg}' },
+        { '<leader>e', '<cmd>DiffviewOpen<cr>', desc = '[E] diff current file with {git,hg}' },
+        { '<leader>z', function()
+            vim.cmd('DiffviewClose')
+            vim.cmd('Neotree close')
+          end, desc = '[Z]en (close file + diff)' },
       },
     },
   },
