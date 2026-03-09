@@ -83,6 +83,8 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+--
+require 'custom/keymaps' -- Load general keymaps
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -91,7 +93,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -125,7 +127,7 @@ vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.softtabstop = 4
 
--- Enable undo/redo changes even after closing and reopening a file
+-- Save undo history
 vim.o.undofile = true
 
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
@@ -166,7 +168,7 @@ vim.o.cursorline = true
 vim.o.scrolloff = 10
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
--- instead raise a dialog asking if you wish to save the current file(s)
+-- instead raise a dialog asking if you wish to save the current file()
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
@@ -175,9 +177,36 @@ vim.o.winblend = 0
 -- Make window separators more visible
 vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#7aa2f7', bold = true })
 -- Make tab colors more pronounced with vibrant colors
-vim.api.nvim_set_hl(0, 'TabLine', { bg = '#2e3440', fg = '#d8dee9', bold = false })      -- Inactive: gray bg, white text
-vim.api.nvim_set_hl(0, 'TabLineSel', { bg = '#ff79c6', fg = '#000000', bold = true })    -- Active: bright pink bg, black text
-vim.api.nvim_set_hl(0, 'TabLineFill', { bg = '#1e1e2e' })                                 -- Fill: dark background
+vim.api.nvim_set_hl(0, 'TabLine', { bg = '#2e3440', fg = '#d8dee9', bold = false }) -- Inactive: gray bg, white text
+vim.api.nvim_set_hl(0, 'TabLineSel', { bg = '#ff79c6', fg = '#000000', bold = true }) -- Active: bright pink bg, black text
+vim.api.nvim_set_hl(0, 'TabLineFill', { bg = '#1e1e2e' }) -- Fill: dark background
+
+-- Custom tabline to show tab numbers
+function _G.custom_tabline()
+  local s = ''
+  for i = 1, vim.fn.tabpagenr '$' do
+    -- Select highlight group
+    if i == vim.fn.tabpagenr() then
+      s = s .. '%#TabLineSel#'
+    else
+      s = s .. '%#TabLine#'
+    end
+    -- Set tab page number (for mouse clicks)
+    s = s .. '%' .. i .. 'T'
+    -- Get buffer name
+    local bufnr = vim.fn.tabpagebuflist(i)[vim.fn.tabpagewinnr(i)]
+    local bufname = vim.fn.bufname(bufnr)
+    local filename = bufname ~= '' and vim.fn.fnamemodify(bufname, ':t') or '[No Name]'
+    -- Add tab number and filename
+    s = s .. ' ' .. i .. ': ' .. filename .. ' '
+  end
+  -- Fill the rest with TabLineFill
+  s = s .. '%#TabLineFill#%T'
+  return s
+end
+
+vim.o.tabline = '%!v:lua.custom_tabline()'
+
 -- Dim inactive windows
 vim.api.nvim_create_autocmd({ 'WinEnter', 'BufEnter' }, {
   callback = function()
@@ -281,8 +310,21 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
-  -- NOTE: Plugins can be added via a link or github org/name. To run setup automatically, use `opts = {}`
-  { 'NMAC427/guess-indent.nvim', opts = {} },
+
+  require 'custom/plugins/lualine',
+  require 'custom/plugins/neotree',
+  require 'custom/plugins/bufferline',
+  require 'custom/plugins/diffview',
+
+  -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+
+  -- NOTE: Plugins can also be added by using a table,
+  -- with the first argument being the link and the following
+  -- keys can be used to configure plugin behavior/loading/etc.
+  --
+  -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
+  --
 
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
   -- If you prefer to call `setup` explicitly, use:
@@ -345,7 +387,13 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-        { 'gr', group = 'LSP Actions', mode = { 'n' } },
+        { '<leader>f', '<cmd>Neotree toggle<cr>', desc = 'Toggle Neo-tree' },
+        { '<leader>d', '<cmd>DiffviewOpen -- %<cr>', desc = '[D]iff current file with {git,hg}' },
+        { '<leader>e', '<cmd>DiffviewOpen<cr>', desc = '[E] diff current file with {git,hg}' },
+        { '<leader>z', function()
+            vim.cmd('DiffviewClose')
+            vim.cmd('Neotree close')
+          end, desc = '[Z]en (close file + diff)' },
       },
     },
   },
@@ -439,8 +487,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-      vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
+      vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope -- cg' })
+      vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
