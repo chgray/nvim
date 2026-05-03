@@ -130,6 +130,9 @@ vim.o.softtabstop = 4
 -- Save undo history
 vim.o.undofile = true
 
+-- Automatically reload files changed outside of Neovim
+vim.o.autoread = true
+
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -163,6 +166,9 @@ vim.o.inccommand = 'split'
 
 -- Show which line your cursor is on
 vim.o.cursorline = true
+
+-- Show an 80-character vertical guide
+vim.o.colorcolumn = '80'
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
@@ -283,6 +289,15 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function() vim.hl.on_yank() end,
+})
+
+-- Check for external file changes when Neovim regains focus or the cursor stops moving
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHoldI' }, {
+  desc = 'Check whether files changed outside of Neovim',
+  group = vim.api.nvim_create_augroup('kickstart-checktime', { clear = true }),
+  callback = function()
+    if vim.fn.mode() ~= 'c' then vim.cmd 'checktime' end
+  end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -462,16 +477,7 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        defaults = {
-          mappings = {
-            i = {
-              ['<CR>'] = 'select_tab',
-            },
-            n = {
-              ['<CR>'] = 'select_tab',
-            },
-          },
-        },
+        defaults = {},
         -- pickers = {}
         extensions = {
           ['ui-select'] = { require('telescope.themes').get_dropdown() },
